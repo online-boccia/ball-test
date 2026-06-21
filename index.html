@@ -2,36 +2,39 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Camera Test</title>
+<title>Ashtray Tracker</title>
+
 <style>
+body{
+  font-family:sans-serif;
+  text-align:center;
+}
+
 video{
   width:100%;
   max-width:640px;
+  border:5px solid red;
+}
+
+#result{
+  font-size:40px;
+  font-weight:bold;
+  margin-top:20px;
 }
 </style>
+
 </head>
 
 <body>
 
-<h2>Camera Test</h2>
+<h2>Ashtray Tracker</h2>
 
-<video id="video"
-       autoplay
-       playsinline
-       style="
-       width:100%;
-       border:5px solid red;
-       ">
-</video>
-  
-<div id="result" style="
-font-size:40px;
-font-weight:bold;
-margin-top:20px;
-">
+<video id="video" autoplay playsinline></video>
+
+<div id="result">
 SEARCH
 </div>
-  
+
 <script>
 
 navigator.mediaDevices.getUserMedia({
@@ -54,16 +57,16 @@ const result = document.getElementById("result");
 
 setInterval(() => {
 
-  const canvas = document.createElement("canvas");
   const video = document.getElementById("video");
 
-  if (!video.videoWidth) return;
+  if(!video.videoWidth) return;
 
+  const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
   const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0);
+  ctx.drawImage(video,0,0);
 
   const img = ctx.getImageData(
     0,
@@ -72,45 +75,54 @@ setInterval(() => {
     canvas.height
   );
 
-  let maxBrightness = 0;
-  let maxX = 0;
+  let whiteCount = 0;
+  let sumX = 0;
 
-  for(let y=0; y<img.height; y+=10){
-    for(let x=0; x<img.width; x+=10){
+  for(let y=0;y<img.height;y+=4){
 
-      const i = (y*img.width + x)*4;
+    for(let x=0;x<img.width;x+=4){
+
+      const i = (y * img.width + x) * 4;
 
       const r = img.data[i];
       const g = img.data[i+1];
       const b = img.data[i+2];
 
-      const bright = r + g + b;
-
-      if(bright > maxBrightness){
-        maxBrightness = bright;
-        maxX = x;
+      if(
+        r > 180 &&
+        g > 180 &&
+        b > 180
+      ){
+        whiteCount++;
+        sumX += x;
       }
     }
   }
 
-  if(maxBrightness < 500){
+  if(whiteCount < 100){
 
     result.innerText = "SEARCH";
+    return;
 
-  }else if(maxX < img.width/3){
+  }
+
+  const centerX = sumX / whiteCount;
+
+  if(centerX < img.width/3){
 
     result.innerText = "LEFT";
 
-  }else if(maxX > img.width*2/3){
+  }else if(centerX > img.width*2/3){
 
     result.innerText = "RIGHT";
 
   }else{
 
     result.innerText = "CENTER";
+
   }
 
-}, 300);
+},300);
 
 </script>
 
