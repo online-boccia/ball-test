@@ -39,6 +39,16 @@ navigator.mediaDevices.getUserMedia({
     facingMode:"environment"
   }
 })
+.then(function(stream){
+
+  document.getElementById("video").srcObject = stream;
+
+})
+.catch(function(err){
+
+  alert("Camera Error : " + err);
+
+});
 
 const result = document.getElementById("result");
 
