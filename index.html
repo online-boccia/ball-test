@@ -84,7 +84,7 @@ setInterval(() => {
       const g = img.data[i+1];
       const b = img.data[i+2];
 
-      const bright = r+g+b;
+      const bright = r + g + b;
 
       if(bright > maxBrightness){
         maxBrightness = bright;
@@ -111,18 +111,6 @@ setInterval(() => {
   }
 
 }, 300);
-
-  
-.then(function(stream){
-
-  document.getElementById("video").srcObject = stream;
-
-})
-.catch(function(err){
-
-  alert("Camera Error : " + err);
-
-});
 
 </script>
 
