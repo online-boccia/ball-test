@@ -17,6 +17,14 @@ video{
 
 <video id="video" autoplay playsinline></video>
 
+<div id="result" style="
+font-size:40px;
+font-weight:bold;
+margin-top:20px;
+">
+SEARCH
+</div>
+  
 <script>
 
 navigator.mediaDevices.getUserMedia({
@@ -24,6 +32,70 @@ navigator.mediaDevices.getUserMedia({
     facingMode:"environment"
   }
 })
+
+const result = document.getElementById("result");
+
+setInterval(() => {
+
+  const canvas = document.createElement("canvas");
+  const video = document.getElementById("video");
+
+  if (!video.videoWidth) return;
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0);
+
+  const img = ctx.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  let maxBrightness = 0;
+  let maxX = 0;
+
+  for(let y=0; y<img.height; y+=10){
+    for(let x=0; x<img.width; x+=10){
+
+      const i = (y*img.width + x)*4;
+
+      const r = img.data[i];
+      const g = img.data[i+1];
+      const b = img.data[i+2];
+
+      const bright = r+g+b;
+
+      if(bright > maxBrightness){
+        maxBrightness = bright;
+        maxX = x;
+      }
+    }
+  }
+
+  if(maxBrightness < 500){
+
+    result.innerText = "SEARCH";
+
+  }else if(maxX < img.width/3){
+
+    result.innerText = "LEFT";
+
+  }else if(maxX > img.width*2/3){
+
+    result.innerText = "RIGHT";
+
+  }else{
+
+    result.innerText = "CENTER";
+  }
+
+}, 300);
+
+  
 .then(function(stream){
 
   document.getElementById("video").srcObject = stream;
