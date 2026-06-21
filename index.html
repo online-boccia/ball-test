@@ -2,12 +2,40 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Ball Test</title>
+<title>Camera Test</title>
+<style>
+video{
+  width:100%;
+  max-width:640px;
+}
+</style>
 </head>
 
 <body>
 
-<h1>Hello Ball Test</h1>
+<h2>Camera Test</h2>
+
+<video id="video" autoplay playsinline></video>
+
+<script>
+
+navigator.mediaDevices.getUserMedia({
+  video:{
+    facingMode:"environment"
+  }
+})
+.then(function(stream){
+
+  document.getElementById("video").srcObject = stream;
+
+})
+.catch(function(err){
+
+  alert("Camera Error : " + err);
+
+});
+
+</script>
 
 </body>
 </html>
